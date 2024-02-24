@@ -3,12 +3,14 @@ import { useState, useEffect } from "react";
 import Header from "./components/Header";
 import Items from "./components/Items";
 import CartModal from "./components/CartModal";
-import foods from "./foods";
+import CheckoutModal from "./components/CheckoutModal";
 
 function App() {
   const [cartVisiblityState, setCartVisibilityState] = useState(false);
   const [cartState, setCartState] = useState([]);
   const [mealsState, setMealsState] = useState([]);
+  const [checkoutModalState, setCheckoutModalState] = useState(false);
+  const [checkOut, setCheckout] = useState(0);
 
   useEffect(() => {
     fetch("http://localhost:3000/meals")
@@ -18,18 +20,29 @@ function App() {
       });
   }, []);
 
-  console.log(mealsState);
+  useEffect(() => {
+    function totalCheckout() {
+      let totalPrice = 0;
+      cartState.forEach((order) => {
+        totalPrice += order.quantity * order.item.price;
+      });
+      setCheckout(totalPrice);
+    }
+    totalCheckout();
+  }, [cartState]);
 
   function handleAddClick(id) {
-    const itemID = foods.findIndex((item) => item.id === id);
-    // console.log(checkItem(itemID));
+    const itemID = mealsState.find((item) => item.id === id);
+    console.log(checkItem(itemID.id));
+    console.log(itemID.id);
+    console.log(id);
 
-    if (checkItem(itemID)) {
-      setStateHelper("+", itemID);
+    if (checkItem(itemID.id)) {
+      setStateHelper("+", itemID.id);
     } else {
       setCartState((prevState) => [
         ...prevState,
-        { item: foods[itemID], quantity: 1 },
+        { item: itemID, quantity: 1 },
       ]);
     }
   }
@@ -63,8 +76,13 @@ function App() {
     setCartVisibilityState((prevState) => !prevState);
   }
 
+  function handleCheckout() {
+    setCheckoutModalState((prevState) => !prevState);
+    console.log(checkoutModalState);
+  }
+
   function handleQuantity(identifier, id, quantity) {
-    if (quantity === 1) {
+    if (quantity === 1 && identifier === "-") {
       setCartState((prevState) => {
         return prevState.filter((item) => item.item.id !== id);
       });
@@ -75,12 +93,20 @@ function App() {
 
   return (
     <div className="min-h-screen bg-stone-600 mx-auto">
+      <CheckoutModal
+        open={checkoutModalState}
+        modalFn={handleCheckout}
+        checkOut={checkOut}
+        cartItems={cartState}
+      />
       <CartModal
         key={cartVisiblityState}
         open={cartVisiblityState}
         modalFn={handleClick}
+        checkModalFn={handleCheckout}
         cartItems={cartState}
         buttonFn={handleQuantity}
+        checkOut={checkOut}
       />
       <Header modalFn={handleClick} cartCnt={cartState.length} />
       <Items onAdd={handleAddClick} meals={mealsState} />

@@ -5,12 +5,12 @@ export default function Items({ onAdd, meals }) {
   return (
     <div className="mt-20 flex justify-center">
       <ul className="grid grid-cols-3 gap-2">
-        {foods.map((foodItem) => {
+        {meals.map((foodItem) => {
           return (
             <Item
               key={foodItem.id}
               id={foodItem.id}
-              image={foodItem.picture}
+              image={foodItem.image}
               name={foodItem.name}
               price={foodItem.price}
               desc={foodItem.description}

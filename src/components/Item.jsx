@@ -1,11 +1,14 @@
 export default function Item({ id, image, name, price, desc, addFn }) {
-  console.log(image);
   return (
     <li
       key={id}
       className="bg-stone-800 pb-3 mb-5 text-center w-56 rounded-lg "
     >
-      <img src={image} alt="image" className="w-56 h-56" />
+      <img
+        src={`http://localhost:3000/${image}`}
+        alt="image"
+        className="w-56 h-56"
+      />
       <p className="text-stone-300 font-bold">{name}</p>
       <p className=" text-yellow-600">${price}</p>
       <p className="text-stone-300">{desc}</p>
